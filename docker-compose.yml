@@ -1,0 +1,28 @@
+services:
+  db:
+    image: docker-contacts-db
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong@Passw0rd
+    volumes:
+      - sqldata:/var/opt/mssql
+      - ./db/backup:/var/opt/mssql/backup
+
+  api:
+    image: docker-contacts-api
+    ports:
+      - "8080:80"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=ContactsDB;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;
+
+  frontend:
+    image: docker-contacts-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  sqldata:
